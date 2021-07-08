@@ -41,7 +41,7 @@ public class ArrayList extends AbstractList {
         checkIndex(index, 0, size - 1);
         Object value = data[index];
         collapseData(index);
-        // TODO: truncData
+        truncData();
         return value;
     }
 
@@ -64,8 +64,7 @@ public class ArrayList extends AbstractList {
             data[i] = null;
         }
         size = 0;
-
-        // TODO: truncData
+        truncData();
     }
 
     @Override
@@ -147,7 +146,7 @@ public class ArrayList extends AbstractList {
         boolean needExpand = false;
         if (newSize > capacity) {
             needExpand = true;
-            capacity = newSize + factor;
+            capacity = newSize * factor;
             newData = new Object[capacity];
             data = newData;
         }
@@ -172,6 +171,12 @@ public class ArrayList extends AbstractList {
         System.arraycopy(oldData, index + 1, newData, index, oldData.length - index - 1);
 
         size--;
+    }
+
+    protected void truncData() {
+        if (capacity > DEFAULT_CAPACITY) {
+            data = new Object[DEFAULT_CAPACITY];
+        }
     }
 
 }
