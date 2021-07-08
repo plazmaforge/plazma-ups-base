@@ -19,6 +19,8 @@ public abstract class AbstractList implements List {
         return indexOf(value) > -1;
     }
 
+    public abstract Object[] toArray();
+
     ////
 
     protected void checkIndex(int index, int from, int to) {
@@ -26,6 +28,8 @@ public abstract class AbstractList implements List {
             throw new IndexOutOfBoundsException("Index must be between [" + from + ", "  + to + "]");
         }
     }
+
+
 
 
 }

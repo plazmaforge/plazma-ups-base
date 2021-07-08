@@ -15,7 +15,7 @@ public class LinkedListTest {
 
         assertEquals(size, list.size());
         println("Size: " + list.size());
-        printList(list);
+        println(list);
 
         list.add("Element New", 2);
         assertEquals("Element 0", list.get(0));
@@ -27,7 +27,7 @@ public class LinkedListTest {
 
         assertEquals(size + 1, list.size());
         println("Size: " + list.size());
-        printList(list);
+        println(list);
 
     }
 
@@ -40,7 +40,7 @@ public class LinkedListTest {
 
         assertEquals(size, list.size());
         println("Size: " + list.size());
-        printList(list);
+        println(list);
 
         Object value = list.remove(2);
         assertEquals("Element 2", value);
@@ -52,7 +52,7 @@ public class LinkedListTest {
 
         assertEquals(size - 1, list.size());
         println("Size: " + list.size());
-        printList(list);
+        println(list);
 
     }
 
@@ -165,15 +165,6 @@ public class LinkedListTest {
     private void populateList(List list, int size) {
         for (int i = 0; i < size; i++) {
             list.add("Element " + i);
-        }
-    }
-
-    private void printList(List list) {
-        if (list == null) {
-            return;
-        }
-        for (int i = 0 ; i < list.size(); i++) {
-            System.out.println(list.get(i));
         }
     }
 

@@ -104,6 +104,32 @@ public class ArrayList extends AbstractList {
         return -1;
     }
 
+    @Override
+    public String toString() {
+        if (size == 0) {
+            return "ArrayList[]";
+        }
+        Object[] array = toArray();
+        StringBuilder buf = new StringBuilder("ArrayList[");
+        for (int i = 0; i < array.length; i++) {
+            if (i > 0) {
+                buf.append(", ");
+            }
+            buf.append(array[i]);
+        }
+        buf.append("]");
+        return buf.toString();
+    }
+
+    public Object[] toArray() {
+        if (size == 0) {
+            return new Object[0];
+        }
+        Object[] result = new Object[size];
+        System.arraycopy(data, 0, result, 0, size);
+        return result;
+    }
+
     ////
 
     protected void init(int capacity, int factor) {

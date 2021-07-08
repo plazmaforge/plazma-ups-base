@@ -127,6 +127,40 @@ public class LinkedList extends AbstractList {
         return findByLastValue(value);
     }
 
+    @Override
+    public String toString() {
+        if (size == 0) {
+            return "LinkedList[]";
+        }
+        Object[] array = toArray();
+        StringBuilder buf = new StringBuilder("LinkedList[");
+        for (int i = 0; i < array.length; i++) {
+            if (i > 0) {
+                buf.append(", ");
+            }
+            buf.append(array[i]);
+        }
+        buf.append("]");
+        return buf.toString();
+    }
+
+    public Object[] toArray() {
+        if (size == 0) {
+            return new Object[0];
+        }
+        Node curr = first;
+        Object[] result = new Object[size];
+        for (int i = 0; i < size; i++) {
+            if (curr == null) {
+                // structure error
+                return result;
+            }
+            result[i] = curr.data;
+            curr = curr.next;
+        }
+        return result;
+    }
+
     ////
 
     protected Node findByIndex(int index) {
