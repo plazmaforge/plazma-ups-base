@@ -13,19 +13,19 @@ public class LinkedListTest {
         int size = 5;
         populateList(list, size);
 
-        assertEquals(list.size(), size);
+        assertEquals(size, list.size());
         println("Size: " + list.size());
         printList(list);
 
         list.add("Element New", 2);
-        assertEquals(list.get(0), "Element 0");
-        assertEquals(list.get(1), "Element 1");
-        assertEquals(list.get(2), "Element New");
-        assertEquals(list.get(3), "Element 2");
-        assertEquals(list.get(4), "Element 3");
-        assertEquals(list.get(5), "Element 4");
+        assertEquals("Element 0", list.get(0));
+        assertEquals("Element 1", list.get(1));
+        assertEquals("Element New", list.get(2));
+        assertEquals("Element 2", list.get(3));
+        assertEquals("Element 3", list.get(4));
+        assertEquals("Element 4", list.get(5));
 
-        assertEquals(list.size(), size + 1);
+        assertEquals(size + 1, list.size());
         println("Size: " + list.size());
         printList(list);
 
@@ -38,19 +38,19 @@ public class LinkedListTest {
         int size = 5;
         populateList(list, size);
 
-        assertEquals(list.size(), size);
+        assertEquals(size, list.size());
         println("Size: " + list.size());
         printList(list);
 
         Object value = list.remove(2);
-        assertEquals(value, "Element 2");
+        assertEquals("Element 2", value);
 
-        assertEquals(list.get(0), "Element 0");
-        assertEquals(list.get(1), "Element 1");
-        assertEquals(list.get(2), "Element 3");
-        assertEquals(list.get(3), "Element 4");
+        assertEquals("Element 0", list.get(0));
+        assertEquals("Element 1", list.get(1));
+        assertEquals("Element 3", list.get(2));
+        assertEquals("Element 4", list.get(3));
 
-        assertEquals(list.size(), size - 1);
+        assertEquals(size - 1, list.size());
         println("Size: " + list.size());
         printList(list);
 
@@ -63,20 +63,20 @@ public class LinkedListTest {
 
         // isEmpty/size
         assertTrue(list.isEmpty());
-        assertEquals(list.size(), 0);
+        assertEquals(0, list.size());
 
         int size = 5; // < 10 (capacity)
         populateList(list, size);
 
         // isEmpty/size
         assertTrue(!list.isEmpty());
-        assertEquals(list.size(), size);
+        assertEquals(size, list.size());
 
         list.clear();
 
         // isEmpty/size
         assertTrue(list.isEmpty());
-        assertEquals(list.size(), 0);
+        assertEquals(0, list.size());
 
     }
 
@@ -90,13 +90,13 @@ public class LinkedListTest {
         Object value = null;
         for (int i = 0 ; i < list.size(); i++) {
             value = list.get(i);
-            assertEquals(value, "Element " + i);
+            assertEquals("Element " + i, value);
         }
 
         for (int i = 0 ; i < list.size(); i++) {
             list.set("New Element " + i, i);
             value = list.get(i);
-            assertEquals(value, "New Element " + i);
+            assertEquals("New Element " + i, value);
         }
 
     }
@@ -138,17 +138,17 @@ public class LinkedListTest {
 
         // index: found
         index = list.indexOf("Element Copy");
-        assertEquals(index, 2);
+        assertEquals(2, index);
 
         index = list.lastIndexOf("Element Copy");
-        assertEquals(index, 5);
+        assertEquals(5, index);
 
         // index: not found
         index = list.indexOf("Element Zero");
-        assertEquals(index, -1);
+        assertEquals(-1, index);
 
         index = list.lastIndexOf("Element Zero");
-        assertEquals(index, -1);
+        assertEquals(-1, index);
 
         // contains: found
         assertTrue(list.contains("Element Copy"));
