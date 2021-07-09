@@ -23,9 +23,7 @@ public class ArrayList extends AbstractList {
 
     @Override
     public void add(Object value) {
-        int index = size;
-        expandData(index);
-        data[index] = value;
+        add(value, size);
     }
 
     @Override

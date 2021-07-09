@@ -39,6 +39,28 @@ public class ArrayListTest {
     }
 
     @Test
+    public void testAddThrow() {
+        final ArrayList list = new ArrayList();
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            list.add("Element", -1);
+        });
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            list.add("Element", list.size() + 1);
+        });
+
+        list.add("Element 0");
+        list.add("Element 1");
+        list.add("Element 2");
+
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            list.add("Element", -1);
+        });
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            list.add("Element", list.size() + 1);
+        });
+    }
+
+    @Test
     public void testRemove() {
 
         ArrayList list = new ArrayList();
@@ -61,6 +83,31 @@ public class ArrayListTest {
         println("Size: " + list.size());
         println(list);
 
+    }
+
+    @Test
+    public void testRemoveThrow() {
+        final ArrayList list = new ArrayList();
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            list.remove(-1);
+        });
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            list.remove(0);
+        });
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            list.remove(list.size() + 1);
+        });
+
+        list.add("Element 0");
+        list.add("Element 1");
+        list.add("Element 2");
+
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            list.remove(-1);
+        });
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            list.add("Element", list.size() + 1);
+        });
     }
 
     @Test
@@ -106,6 +153,56 @@ public class ArrayListTest {
             assertEquals("New Element " + i, value);
         }
 
+    }
+
+    @Test
+    public void testGetThrow() {
+        final ArrayList list = new ArrayList();
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            list.get(-1);
+        });
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            list.get(0);
+        });
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            list.get(list.size() + 1);
+        });
+
+        list.add("Element 0");
+        list.add("Element 1");
+        list.add("Element 2");
+
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            list.get(-1);
+        });
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            list.get(list.size() + 1);
+        });
+    }
+
+    @Test
+    public void testSetThrow() {
+        final ArrayList list = new ArrayList();
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            list.set("Element", -1);
+        });
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            list.set("Element", 0);
+        });
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            list.set("Element", list.size() + 1);
+        });
+
+        list.add("Element 0");
+        list.add("Element 1");
+        list.add("Element 2");
+
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            list.set("Element", -1);
+        });
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            list.set("Element", list.size() + 1);
+        });
     }
 
     @Test
