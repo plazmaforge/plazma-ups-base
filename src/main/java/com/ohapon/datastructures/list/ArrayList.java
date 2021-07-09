@@ -2,23 +2,23 @@ package com.ohapon.datastructures.list;
 
 public class ArrayList extends AbstractList {
 
-    public static int DEFAULT_CAPACITY = 10;
-    public static float DEFAULT_FACTOR = 1.5f;
+    private static final int DEFAULT_CAPACITY = 10;
+    private static final double DEFAULT_LOAD_FACTOR = 1.5f;
 
     private Object[] data;
-    private int initialCapacity;
-    private float factor;
+    private double loadFactor;
 
     public ArrayList() {
-        init(DEFAULT_CAPACITY, DEFAULT_FACTOR);
-    }
-
-    public ArrayList(int initialCapacity, float factor) {
-        init(initialCapacity, factor);
+        this(DEFAULT_CAPACITY, DEFAULT_LOAD_FACTOR);
     }
 
     public ArrayList(int initialCapacity) {
-        init(initialCapacity, DEFAULT_FACTOR);
+        this(initialCapacity, DEFAULT_LOAD_FACTOR);
+    }
+
+    public ArrayList(int initialCapacity, double loadFactor) {
+        this.loadFactor = loadFactor < 1 ? DEFAULT_LOAD_FACTOR : loadFactor;
+        this.data = new Object[initialCapacity];
     }
 
     @Override
@@ -28,31 +28,34 @@ public class ArrayList extends AbstractList {
 
     @Override
     public void add(Object value, int index) {
-        checkIndex(index, 0, size);
-        expandData(index);
+        validateIndexForAdd(index);
+        ensureCapacity();
+        System.arraycopy(data, index, data, index + 1, size - index);
         data[index] = value;
+        size++;
     }
 
     @Override
     public Object remove(int index) {
-        checkIndex(index, 0, size - 1);
+        validateIfIndexExists(index);
         Object value = data[index];
-        collapseData(index);
-        truncData();
+        System.arraycopy(data, index + 1, data, index, data.length - index - 1);
+        size--;
         return value;
     }
 
     @Override
     public Object get(int index) {
-        checkIndex(index, 0, size - 1);
+        validateIfIndexExists(index);
         return data[index];
     }
 
     @Override
     public Object set(Object value, int index) {
-        checkIndex(index, 0, size - 1);
+        validateIfIndexExists(index);
+        Object oldValue = data[index];
         data[index] = value;
-        return value;
+        return oldValue;
     }
 
     @Override
@@ -61,7 +64,6 @@ public class ArrayList extends AbstractList {
             data[i] = null;
         }
         size = 0;
-        truncData();
     }
 
     @Override
@@ -126,60 +128,16 @@ public class ArrayList extends AbstractList {
         return result;
     }
 
-    ////
-
-    protected void init(int initialCapacity, float factor) {
-        this.size = 0;
-        this.initialCapacity = initialCapacity < 1 ? DEFAULT_CAPACITY : initialCapacity;
-        this.factor = factor < 1 ? DEFAULT_FACTOR : factor;
-        this.data = new Object[initialCapacity];
-    }
-
-    protected void expandData(int index) {
-        int newSize = size + 1;
-        Object[] oldData = data;
-        Object[] newData = data;
-
-        boolean needExpand = false;
-        if (newSize > getCapacity()) {
-            needExpand = true;
-            int newCapacity = growCapacity(newSize);
-            newData = new Object[newCapacity];
-            data = newData;
-        }
-
-        if (needExpand) {
-            System.arraycopy(oldData, 0, newData, 0, index);
-        }
-
-        if (index < size) {
-            System.arraycopy(oldData, index, newData, index + 1, size - index);
-        }
-
-        size++;
-
-    }
-
-    protected int growCapacity(int size) {
-        return (int) (size * factor);
-    }
-
-    protected void collapseData(int index) {
-        System.arraycopy(data, index + 1, data, index, data.length - index - 1);
-        size--;
-    }
-
-    protected void truncData() {
-        int newCapacity = growCapacity(size);
-        int maxCapacity = newCapacity * 2;
-        if ((getCapacity() > maxCapacity) && (newCapacity > size)) {
+    protected void ensureCapacity() {
+        if (size == getCapacity()) {
+            int newCapacity = (int) (size * loadFactor);
             Object[] newData = new Object[newCapacity];
             System.arraycopy(data, 0, newData, 0, size);
             data = newData;
         }
     }
 
-    protected int getCapacity() {
+    int getCapacity() {
         return data.length;
     }
 

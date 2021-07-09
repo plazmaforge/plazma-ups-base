@@ -21,15 +21,16 @@ public abstract class AbstractList implements List {
 
     public abstract Object[] toArray();
 
-    ////
-
-    protected void checkIndex(int index, int from, int to) {
-        if (index < from || index > to) {
-            throw new IndexOutOfBoundsException("Index must be between [" + from + ", "  + to + "]");
+    protected void validateIfIndexExists(int index) {
+        if (index < 0 || index > size - 1) {
+            throw new IndexOutOfBoundsException("Index must be between [0, "  + (size - 1) + "]");
         }
     }
 
-
-
+    protected void validateIndexForAdd(int index) {
+        if (index < 0 || index > size) {
+            throw new IndexOutOfBoundsException("Index must be between [0, "  + size + "]");
+        }
+    }
 
 }

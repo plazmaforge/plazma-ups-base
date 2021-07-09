@@ -29,7 +29,7 @@ public class LinkedList extends AbstractList {
 
     @Override
     public void add(Object value, int index) {
-        checkIndex(index, 0, size);
+        validateIndexForAdd(index);
         Node curr = findByIndex(index);
         if (curr == null) {
             // structure error
@@ -57,7 +57,7 @@ public class LinkedList extends AbstractList {
 
     @Override
     public Object remove(int index) {
-        checkIndex(index, 0, size - 1);
+        validateIfIndexExists(index);
         Node curr = findByIndex(index);
         if (curr == null) {
             // structure error
@@ -83,7 +83,7 @@ public class LinkedList extends AbstractList {
 
     @Override
     public Object get(int index) {
-        checkIndex(index, 0, size - 1);
+        validateIfIndexExists(index);
         Node curr = findByIndex(index);
         if (curr == null) {
             // structure error
@@ -94,14 +94,15 @@ public class LinkedList extends AbstractList {
 
     @Override
     public Object set(Object value, int index) {
-        checkIndex(index, 0, size - 1);
+        validateIfIndexExists(index);
         Node curr = findByIndex(index);
         if (curr == null) {
             // structure error
             return null;
         }
+        Object oldValue = curr.data;
         curr.data = value;
-        return curr.data;
+        return oldValue;
     }
 
     @Override
