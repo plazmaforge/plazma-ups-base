@@ -3,23 +3,22 @@ package com.ohapon.datastructures.list;
 public class ArrayList extends AbstractList {
 
     public static int DEFAULT_CAPACITY = 10;
-    public static int DEFAULT_FACTOR = 10;
+    public static float DEFAULT_FACTOR = 1.5f;
 
     private Object[] data;
-
-    private int capacity;
-    private int factor;
+    private int initialCapacity;
+    private float factor;
 
     public ArrayList() {
         init(DEFAULT_CAPACITY, DEFAULT_FACTOR);
     }
 
-    public ArrayList(int capacity, int factor) {
-        init(capacity, factor);
+    public ArrayList(int initialCapacity, float factor) {
+        init(initialCapacity, factor);
     }
 
-    public ArrayList(int capacity) {
-        init(capacity, DEFAULT_FACTOR);
+    public ArrayList(int initialCapacity) {
+        init(initialCapacity, DEFAULT_FACTOR);
     }
 
     @Override
@@ -131,11 +130,11 @@ public class ArrayList extends AbstractList {
 
     ////
 
-    protected void init(int capacity, int factor) {
+    protected void init(int initialCapacity, float factor) {
         this.size = 0;
-        this.capacity = capacity < 1 ? DEFAULT_CAPACITY : capacity;
+        this.initialCapacity = initialCapacity < 1 ? DEFAULT_CAPACITY : initialCapacity;
         this.factor = factor < 1 ? DEFAULT_FACTOR : factor;
-        this.data = new Object[capacity];
+        this.data = new Object[initialCapacity];
     }
 
     protected void expandData(int index) {
@@ -144,10 +143,10 @@ public class ArrayList extends AbstractList {
         Object[] newData = data;
 
         boolean needExpand = false;
-        if (newSize > capacity) {
+        if (newSize > getCapacity()) {
             needExpand = true;
-            capacity = newSize * factor;
-            newData = new Object[capacity];
+            int newCapacity = growCapacity(newSize);
+            newData = new Object[newCapacity];
             data = newData;
         }
 
@@ -163,20 +162,27 @@ public class ArrayList extends AbstractList {
 
     }
 
+    protected int growCapacity(int size) {
+        return (int) (size * factor);
+    }
+
     protected void collapseData(int index) {
-
-        Object[] oldData = data;
-        Object[] newData = data;
-
-        System.arraycopy(oldData, index + 1, newData, index, oldData.length - index - 1);
-
+        System.arraycopy(data, index + 1, data, index, data.length - index - 1);
         size--;
     }
 
     protected void truncData() {
-        if (capacity > DEFAULT_CAPACITY) {
-            data = new Object[DEFAULT_CAPACITY];
+        int newCapacity = growCapacity(size);
+        int maxCapacity = newCapacity * 2;
+        if ((getCapacity() > maxCapacity) && (newCapacity > size)) {
+            Object[] newData = new Object[newCapacity];
+            System.arraycopy(data, 0, newData, 0, size);
+            data = newData;
         }
+    }
+
+    protected int getCapacity() {
+        return data.length;
     }
 
 }
