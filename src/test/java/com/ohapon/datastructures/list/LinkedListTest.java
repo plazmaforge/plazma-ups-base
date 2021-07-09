@@ -28,6 +28,16 @@ public class LinkedListTest {
         println("Size: " + list.size());
         println(list);
 
+        size = 6;
+
+        // add: null-1
+        list.add(null);
+        assertEquals(size + 1, list.size());
+
+        // add: null-2
+        list.add(null);
+        assertEquals(size + 2, list.size());
+
     }
 
     @Test
@@ -75,6 +85,22 @@ public class LinkedListTest {
         assertEquals(size - 1, list.size());
         println("Size: " + list.size());
         println(list);
+
+        list.add(null);          // index = 4, size = 5
+        list.add("New Element"); // index = 5, size = 6
+        list.add(null);          // index = 6, size = 7
+
+        value = list.remove(4);
+        assertNull(value);
+        assertEquals(6, list.size()); // size = 6
+
+        assertEquals("Element 0", list.get(0));
+        assertEquals("Element 1", list.get(1));
+        assertEquals("Element 3", list.get(2));
+        assertEquals("Element 4", list.get(3));
+        assertEquals("New Element", list.get(4));
+        assertEquals(null, list.get(5));
+
 
     }
 
@@ -146,6 +172,10 @@ public class LinkedListTest {
             value = list.get(i);
             assertEquals("New Element " + i, value);
         }
+
+        assertNotNull(list.get(3));
+        list.set(null, 3);
+        assertNull(list.get(3));
 
     }
 
@@ -254,6 +284,20 @@ public class LinkedListTest {
 
         // contains: not found
         assertFalse(list.contains("Element Zero"));
+
+        // indexOf/lastIndexOf/contains: null
+        assertEquals(-1, list.indexOf(null));
+        assertEquals(-1, list.lastIndexOf(null));
+        assertFalse(list.contains(null));
+
+        list.add(null);         // index = 8
+        list.add("Element 9");  // index = 9
+        list.add(null);         // index = 10
+        list.add("Element 11"); // index = 11
+
+        assertEquals(8, list.indexOf(null));
+        assertEquals(10, list.lastIndexOf(null));
+        assertTrue(list.contains(null));
 
     }
 
