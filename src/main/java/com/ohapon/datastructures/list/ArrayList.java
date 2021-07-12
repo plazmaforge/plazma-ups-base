@@ -1,5 +1,6 @@
 package com.ohapon.datastructures.list;
 
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -109,6 +110,35 @@ public class ArrayList extends AbstractList {
 
     int getCapacity() {
         return data.length;
+    }
+
+    private class ArrayIterator implements Iterator {
+
+        int currIndex = -1;
+        int lastIndex;
+
+        @Override
+        public boolean hasNext() {
+            return currIndex + 1 < size;
+        }
+
+        @Override
+        public Object next() {
+            if (currIndex >= size) {
+                throw new NoSuchElementException();
+            }
+            lastIndex =  currIndex;
+            currIndex++;
+            return ArrayList.this.get(currIndex);
+        }
+
+        @Override
+        public void remove() {
+            // TODO: Check concurrency
+            ArrayList.this.remove(currIndex);
+            currIndex = lastIndex;
+            lastIndex = 0;
+        }
     }
 
 }
