@@ -44,6 +44,7 @@ public class ArrayList extends AbstractList {
         validateIfIndexExists(index);
         Object value = data[index];
         System.arraycopy(data, index + 1, data, index, data.length - index - 1);
+        data[size - 1] = null;
         size--;
         return value;
     }
@@ -92,14 +93,14 @@ public class ArrayList extends AbstractList {
 
     @Override
     public String toString() {
-        StringJoiner buf = new StringJoiner(", ", "[", "]");
+        StringJoiner result = new StringJoiner(", ", "[", "]");
         for (int i = 0; i < size; i++) {
-            buf.add(data[i] == null ? null : data[i].toString());
+            result.add(String.valueOf(data[i]));
         }
-        return buf.toString();
+        return result.toString();
     }
 
-    protected void ensureCapacity() {
+    private void ensureCapacity() {
         if (size == getCapacity()) {
             int newCapacity = (int) (size * loadFactor);
             Object[] newData = new Object[newCapacity];

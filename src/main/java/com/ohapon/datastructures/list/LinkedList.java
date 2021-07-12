@@ -160,12 +160,12 @@ public class LinkedList extends AbstractList {
 
     @Override
     public String toString() {
-        StringJoiner buf = new StringJoiner(", ", "[", "]");
+        StringJoiner result = new StringJoiner(", ", "[", "]");
         Node curr = first;
         for (int i = 0; i < size; i++) {
-            buf.add(curr.data == null ? null : curr.data.toString());
+            result.add(String.valueOf(curr.data));
         }
-        return buf.toString();
+        return result.toString();
     }
 
     protected Node findByIndex(int index) {
