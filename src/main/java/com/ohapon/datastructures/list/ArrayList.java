@@ -26,11 +26,6 @@ public class ArrayList extends AbstractList {
     }
 
     @Override
-    public void add(Object value) {
-        add(value, size);
-    }
-
-    @Override
     public void add(Object value, int index) {
         validateIndexForAdd(index);
         ensureCapacity();
@@ -128,7 +123,7 @@ public class ArrayList extends AbstractList {
             if (currIndex >= size) {
                 throw new NoSuchElementException();
             }
-            lastIndex =  currIndex;
+            lastIndex = currIndex;
             currIndex++;
             return ArrayList.this.get(currIndex);
         }

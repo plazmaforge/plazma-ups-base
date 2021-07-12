@@ -8,51 +8,31 @@ public class LinkedList extends AbstractList {
     private Node first;
     private Node last;
 
-    private static class Node {
-        Node prev;
-        Node next;
-        Object data;
-    }
-
-    @Override
-    public void add(Object value) {
-        Node node = new Node();
-        node.data = value;
-
-        if (size == 0) {
-            first = node;
-            last = first;
-        } else {
-            last.next = node;
-            node.prev = last;
-            last = node;
-        }
-        size++;
-    }
-
     @Override
     public void add(Object value, int index) {
         validateIndexForAdd(index);
-        Node curr = findByIndex(index);
-        if (curr == null) {
-            // structure error
-            return;
-        }
-        Node prev = curr.prev;
+        Node node = new Node(value);
 
-        Node node = new Node();
-        node.data = value;
-
-        prev.next = node;
-        node.prev = prev;
-        node.next = curr;
-        curr.prev = node;
-
-        if (index == 0) {
+        if (size == 0) {
+            first = last = node;
+        } else if (index == 0) {
+            node.next = first;
+            first.prev = node;
             first = node;
-        }
-        if (index == size) {
+        } else if (index == size) {
+            node.prev = last;
+            last.next = node;
             last = node;
+        } else {
+
+            Node current = findByIndex(index);
+
+            node.prev = current.prev;
+            node.next = current;
+
+            current.prev.next = node;
+            current.prev = node;
+
         }
 
         size++;
@@ -61,55 +41,39 @@ public class LinkedList extends AbstractList {
     @Override
     public Object remove(int index) {
         validateIfIndexExists(index);
-        Node curr = findByIndex(index);
-        if (curr == null) {
-            // structure error
-            return null;
-        }
-        Node prev = curr.prev;
-        Node next = curr.next;
+        Node current = findByIndex(index);
 
-        if (prev != null) {
-            prev.next = curr.next;
-        }
-
-        if (next != null) {
-            next.prev = curr.prev;
-        }
-
-        if (index == 0) {
-            first = curr.next;
-        }
-        if (index == size - 1) {
-            last = curr.prev;
+        if (size == 1) {
+            first = last = null;
+        } else if (index == 0) {
+            first.next.prev = null;
+            first = first.next;
+        } else if (index == size - 1) {
+            last.prev.next = null;
+            last = last.prev;
+        } else {
+            current.prev.next = current.next;
+            current.next.prev = current.prev;
         }
 
         size--;
 
-        return curr.data;
+        return current.data;
     }
 
     @Override
     public Object get(int index) {
         validateIfIndexExists(index);
-        Node curr = findByIndex(index);
-        if (curr == null) {
-            // structure error
-            return null;
-        }
-        return curr.data;
+        Node current = findByIndex(index);
+        return current.data;
     }
 
     @Override
     public Object set(Object value, int index) {
         validateIfIndexExists(index);
-        Node curr = findByIndex(index);
-        if (curr == null) {
-            // structure error
-            return null;
-        }
-        Object oldValue = curr.data;
-        curr.data = value;
+        Node current = findByIndex(index);
+        Object oldValue = current.data;
+        current.data = value;
         return oldValue;
     }
 
@@ -122,38 +86,30 @@ public class LinkedList extends AbstractList {
 
     @Override
     public int indexOf(Object value) {
-        if (first == null) {
+        if (isEmpty()) {
             return -1;
         }
-        Node curr = first;
+        Node current = first;
         for (int i = 0; i < size; i++) {
-            if (curr == null) {
-                // structure error
-                return -1;
-            }
-            if (Objects.equals(curr.data, value)) {
+            if (Objects.equals(current.data, value)) {
                 return i;
             }
-            curr = curr.next;
+            current = current.next;
         }
         return -1;
     }
 
     @Override
     public int lastIndexOf(Object value) {
-        if (last == null) {
+        if (isEmpty()) {
             return -1;
         }
-        Node curr = last;
+        Node current = last;
         for (int i = size - 1; i >= 0; i--) {
-            if (curr == null) {
-                // structure error
-                return -1;
-            }
-            if (Objects.equals(curr.data, value)) {
+            if (Objects.equals(current.data, value)) {
                 return i;
             }
-            curr = curr.prev;
+            current = current.prev;
         }
         return -1;
     }
@@ -172,18 +128,27 @@ public class LinkedList extends AbstractList {
         if (first == null) {
             return null;
         }
-        Node curr =  first;
+        Node current =  first;
         for (int i = 0; i < size; i++) {
             if (i == index) {
-                return curr;
+                return current;
             }
-            if (curr == null) {
-                // structure error
-                return null;
-            }
-            curr = curr.next;
+            current = current.next;
         }
         return null;
+    }
+
+    private static class Node {
+        private Node prev;
+        private Node next;
+        private Object data;
+
+        private Node() {
+        }
+
+        public Node(Object data) {
+            this.data = data;
+        }
     }
 
 }

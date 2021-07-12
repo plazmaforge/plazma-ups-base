@@ -5,6 +5,11 @@ public abstract class AbstractList implements List {
     protected int size;
 
     @Override
+    public void add(Object value) {
+        add(value, size);
+    }
+
+    @Override
     public int size() {
         return size;
     }
