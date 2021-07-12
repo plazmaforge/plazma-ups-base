@@ -69,8 +69,13 @@ public class LinkedList extends AbstractList {
         Node prev = curr.prev;
         Node next = curr.next;
 
-        prev.next = curr.next;
-        next.prev = curr.prev;
+        if (prev != null) {
+            prev.next = curr.next;
+        }
+
+        if (next != null) {
+            next.prev = curr.prev;
+        }
 
         if (index == 0) {
             first = curr.next;
