@@ -79,8 +79,18 @@ public class LinkedList extends AbstractList {
 
     @Override
     public void clear() {
-        first = null;
-        last = null;
+        Node current = first;
+        Node next = null;
+        for (int i = 0; i < size; i++) {
+            next = current.next;
+            current.prev = null;
+            current.next = null;
+            current.data = null;
+
+            current = next;
+        }
+
+        first = last = null;
         size = 0;
     }
 
@@ -124,18 +134,26 @@ public class LinkedList extends AbstractList {
         return result.toString();
     }
 
-    protected Node findByIndex(int index) {
-        if (first == null) {
-            return null;
-        }
-        Node current =  first;
-        for (int i = 0; i < size; i++) {
-            if (i == index) {
-                return current;
+    private Node findByIndex(int index) {
+        Node current = null;
+        if (index == 0) {
+            current = first;
+        } else if (index == size - 1) {
+            current = last;
+        } else {
+            if (index <= size / 2) {
+                current = first;
+                for (int i = 0; i < index; i++) {
+                    current = current.next;
+                }
+            } else {
+                current = last;
+                for (int i = size - 1; i > index; i--) {
+                    current = current.prev;
+                }
             }
-            current = current.next;
         }
-        return null;
+        return current;
     }
 
     private static class Node {
