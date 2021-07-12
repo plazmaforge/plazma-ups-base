@@ -19,8 +19,6 @@ public abstract class AbstractList implements List {
         return indexOf(value) > -1;
     }
 
-    public abstract Object[] toArray();
-
     protected void validateIfIndexExists(int index) {
         if (index < 0 || index > size - 1) {
             throw new IndexOutOfBoundsException("Index must be between [0, "  + (size - 1) + "]");

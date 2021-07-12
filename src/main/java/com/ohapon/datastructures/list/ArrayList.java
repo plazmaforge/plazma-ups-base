@@ -1,5 +1,7 @@
 package com.ohapon.datastructures.list;
 
+import java.util.StringJoiner;
+
 public class ArrayList extends AbstractList {
 
     private static final int DEFAULT_CAPACITY = 10;
@@ -104,28 +106,11 @@ public class ArrayList extends AbstractList {
 
     @Override
     public String toString() {
-        if (size == 0) {
-            return "ArrayList[]";
+        StringJoiner buf = new StringJoiner(", ", "[", "]");
+        for (int i = 0; i < size; i++) {
+            buf.add(data[i] == null ? null : data[i].toString());
         }
-        Object[] array = toArray();
-        StringBuilder buf = new StringBuilder("ArrayList[");
-        for (int i = 0; i < array.length; i++) {
-            if (i > 0) {
-                buf.append(", ");
-            }
-            buf.append(array[i]);
-        }
-        buf.append("]");
         return buf.toString();
-    }
-
-    public Object[] toArray() {
-        if (size == 0) {
-            return new Object[0];
-        }
-        Object[] result = new Object[size];
-        System.arraycopy(data, 0, result, 0, size);
-        return result;
     }
 
     protected void ensureCapacity() {

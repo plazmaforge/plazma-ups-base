@@ -41,6 +41,10 @@ public abstract class AbstractListTest {
         list.add(null);
         assertEquals(8, list.size());
 
+        System.out.println(list);
+
+        list = createList();
+        System.out.println(list);
     }
 
     @Test
