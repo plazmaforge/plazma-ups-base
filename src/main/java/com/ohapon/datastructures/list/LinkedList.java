@@ -1,5 +1,8 @@
 package com.ohapon.datastructures.list;
 
+import java.util.Objects;
+import java.util.StringJoiner;
+
 public class LinkedList extends AbstractList {
 
     private Node first;
@@ -114,55 +117,51 @@ public class LinkedList extends AbstractList {
 
     @Override
     public int indexOf(Object value) {
-        if (size == 0) {
+        if (first == null) {
             return -1;
         }
-        return findByFirstValue(value);
+        Node curr = first;
+        for (int i = 0; i < size; i++) {
+            if (curr == null) {
+                // structure error
+                return -1;
+            }
+            if (Objects.equals(curr.data, value)) {
+                return i;
+            }
+            curr = curr.next;
+        }
+        return -1;
     }
 
     @Override
     public int lastIndexOf(Object value) {
-        if (size == 0) {
+        if (last == null) {
             return -1;
         }
-        return findByLastValue(value);
+        Node curr = last;
+        for (int i = size - 1; i >= 0; i--) {
+            if (curr == null) {
+                // structure error
+                return -1;
+            }
+            if (Objects.equals(curr.data, value)) {
+                return i;
+            }
+            curr = curr.prev;
+        }
+        return -1;
     }
 
     @Override
     public String toString() {
-        if (size == 0) {
-            return "LinkedList[]";
+        StringJoiner buf = new StringJoiner(", ", "[", "]");
+        Node curr = first;
+        for (int i = 0; i < size; i++) {
+            buf.add(curr.data == null ? null : curr.data.toString());
         }
-        Object[] array = toArray();
-        StringBuilder buf = new StringBuilder("LinkedList[");
-        for (int i = 0; i < array.length; i++) {
-            if (i > 0) {
-                buf.append(", ");
-            }
-            buf.append(array[i]);
-        }
-        buf.append("]");
         return buf.toString();
     }
-
-    public Object[] toArray() {
-        if (size == 0) {
-            return new Object[0];
-        }
-        Node curr = first;
-        Object[] result = new Object[size];
-        for (int i = 0; i < size; i++) {
-            if (curr == null) {
-                // structure error
-                return result;
-            }
-            result[i] = curr.data;
-            curr = curr.next;
-        }
-        return result;
-    }
-
-    ////
 
     protected Node findByIndex(int index) {
         if (first == null) {
@@ -180,68 +179,6 @@ public class LinkedList extends AbstractList {
             curr = curr.next;
         }
         return null;
-    }
-
-    protected int findByFirstValue(Object value) {
-        if (first == null) {
-            return -1;
-        }
-        Node curr = first;
-        if (value == null) {
-            for (int i = 0; i < size; i++) {
-                if (curr == null) {
-                    // structure error
-                    return -1;
-                }
-                if (curr.data == null) {
-                    return i;
-                }
-                curr = curr.next;
-            }
-        } else {
-            for (int i = 0; i < size; i++) {
-                if (curr == null) {
-                    // structure error
-                    return -1;
-                }
-                if (value.equals(curr.data)) {
-                    return i;
-                }
-                curr = curr.next;
-            }
-        }
-        return -1;
-    }
-
-    protected int findByLastValue(Object value) {
-        if (last == null) {
-            return -1;
-        }
-        Node curr = last;
-        if (value == null) {
-            for (int i = size - 1; i >= 0; i--) {
-                if (curr == null) {
-                    // structure error
-                    return -1;
-                }
-                if (curr.data == null) {
-                    return i;
-                }
-                curr = curr.prev;
-            }
-        } else {
-            for (int i = size - 1; i >= 0; i--) {
-                if (curr == null) {
-                    // structure error
-                    return -1;
-                }
-                if (value.equals(curr.data)) {
-                    return i;
-                }
-                curr = curr.prev;
-            }
-        }
-        return -1;
     }
 
 }

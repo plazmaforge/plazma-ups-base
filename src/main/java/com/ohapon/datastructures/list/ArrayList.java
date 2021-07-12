@@ -1,5 +1,6 @@
 package com.ohapon.datastructures.list;
 
+import java.util.Objects;
 import java.util.StringJoiner;
 
 public class ArrayList extends AbstractList {
@@ -70,17 +71,9 @@ public class ArrayList extends AbstractList {
 
     @Override
     public int indexOf(Object value) {
-        if (value == null) {
-            for (int i = 0; i < size; i++) {
-                if (data[i] == null) {
-                    return i;
-                }
-            }
-        } else {
-            for (int i = 0; i < size; i++) {
-                if (value.equals(data[i])) {
-                    return i;
-                }
+        for (int i = 0; i < size; i++) {
+            if (Objects.equals(data[i], value)) {
+                return i;
             }
         }
         return -1;
@@ -88,17 +81,9 @@ public class ArrayList extends AbstractList {
 
     @Override
     public int lastIndexOf(Object value) {
-        if (value == null) {
-            for (int i = size - 1; i >= 0; i--) {
-                if (data[i] == null) {
-                    return i;
-                }
-            }
-        } else {
-            for (int i = size - 1; i >= 0; i--) {
-                if (value.equals(data[i])) {
-                    return i;
-                }
+        for (int i = size - 1; i >= 0; i--) {
+            if (Objects.equals(data[i], value)) {
+                return i;
             }
         }
         return -1;
