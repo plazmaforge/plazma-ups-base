@@ -4,7 +4,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-public class ArrayList extends AbstractList {
+public class ArrayList<T> extends AbstractList<T> {
 
     private static final int DEFAULT_CAPACITY = 10;
     private static final double DEFAULT_LOAD_FACTOR = 1.5f;
@@ -26,7 +26,7 @@ public class ArrayList extends AbstractList {
     }
 
     @Override
-    public void add(Object value, int index) {
+    public void add(T value, int index) {
         validateIndexForAdd(index);
         ensureCapacity();
         System.arraycopy(data, index, data, index + 1, size - index);
@@ -35,27 +35,27 @@ public class ArrayList extends AbstractList {
     }
 
     @Override
-    public Object remove(int index) {
+    public T remove(int index) {
         validateIfIndexExists(index);
         Object value = data[index];
         System.arraycopy(data, index + 1, data, index, data.length - index - 1);
         data[size - 1] = null;
         size--;
-        return value;
+        return (T) value;
     }
 
     @Override
-    public Object get(int index) {
+    public T get(int index) {
         validateIfIndexExists(index);
-        return data[index];
+        return (T) data[index];
     }
 
     @Override
-    public Object set(Object value, int index) {
+    public T set(Object value, int index) {
         validateIfIndexExists(index);
         Object oldValue = data[index];
         data[index] = value;
-        return oldValue;
+        return (T) oldValue;
     }
 
     @Override
@@ -108,7 +108,7 @@ public class ArrayList extends AbstractList {
         return data.length;
     }
 
-    private class ArrayIterator implements Iterator {
+    private class ArrayIterator<T> implements Iterator<T> {
 
         int currIndex = -1;
         int lastIndex;
@@ -119,13 +119,13 @@ public class ArrayList extends AbstractList {
         }
 
         @Override
-        public Object next() {
+        public T next() {
             if (currIndex >= size) {
                 throw new NoSuchElementException();
             }
             lastIndex = currIndex;
             currIndex++;
-            return ArrayList.this.get(currIndex);
+            return (T) ArrayList.this.get(currIndex);
         }
 
         @Override

@@ -1,11 +1,11 @@
 package com.ohapon.datastructures.list;
 
-public abstract class AbstractList implements List {
+public abstract class AbstractList<T> implements List<T> {
 
     protected int size;
 
     @Override
-    public void add(Object value) {
+    public void add(T value) {
         add(value, size);
     }
 

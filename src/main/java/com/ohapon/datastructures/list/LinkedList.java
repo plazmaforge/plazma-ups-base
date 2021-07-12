@@ -3,13 +3,13 @@ package com.ohapon.datastructures.list;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-public class LinkedList extends AbstractList {
+public class LinkedList<T> extends AbstractList<T> {
 
     private Node first;
     private Node last;
 
     @Override
-    public void add(Object value, int index) {
+    public void add(T value, int index) {
         validateIndexForAdd(index);
         Node node = new Node(value);
 
@@ -39,7 +39,7 @@ public class LinkedList extends AbstractList {
     }
 
     @Override
-    public Object remove(int index) {
+    public T remove(int index) {
         validateIfIndexExists(index);
         Node current = findByIndex(index);
 
@@ -58,23 +58,23 @@ public class LinkedList extends AbstractList {
 
         size--;
 
-        return current.data;
+        return (T) current.data;
     }
 
     @Override
-    public Object get(int index) {
+    public T get(int index) {
         validateIfIndexExists(index);
         Node current = findByIndex(index);
-        return current.data;
+        return (T) current.data;
     }
 
     @Override
-    public Object set(Object value, int index) {
+    public T set(Object value, int index) {
         validateIfIndexExists(index);
         Node current = findByIndex(index);
         Object oldValue = current.data;
         current.data = value;
-        return oldValue;
+        return (T) oldValue;
     }
 
     @Override
