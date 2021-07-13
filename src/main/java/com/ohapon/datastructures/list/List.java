@@ -1,4 +1,5 @@
 package com.ohapon.datastructures.list;
+
 public interface List<T> {
 
     // add value to the end of the list
@@ -40,6 +41,8 @@ public interface List<T> {
 
     // [A, B, A, C] lastIndexOf(A) -> 2
     int lastIndexOf(Object value);
+
+    Iterator<T> iterator();
 
     // [A, B, C]
     String toString();

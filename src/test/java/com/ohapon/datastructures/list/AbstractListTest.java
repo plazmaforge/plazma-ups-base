@@ -1,6 +1,9 @@
 package com.ohapon.datastructures.list;
 
 import org.junit.Test;
+
+import java.util.NoSuchElementException;
+
 import static org.junit.Assert.*;
 
 public abstract class AbstractListTest {
@@ -104,7 +107,7 @@ public abstract class AbstractListTest {
         assertEquals(2, list.size());
 
         assertEquals("Element 0", list.get(0));
-        assertEquals("Element 2", list.get(2));
+        assertEquals("Element 2", list.get(1));
 
 
         list.add(null);
@@ -199,12 +202,9 @@ public abstract class AbstractListTest {
         list.add("Element 0");
         list.add("Element 1");
 
-        assertEquals(3, list.size());
-
-        list.remove(0);
         assertEquals(2, list.size());
 
-        list.remove(1);
+        list.remove(0);
         assertEquals(1, list.size());
 
         list.remove(0);
@@ -221,7 +221,7 @@ public abstract class AbstractListTest {
         list.add("Element 0");
         list.add("Element 1");
 
-        assertEquals(3, list.size());
+        assertEquals(2, list.size());
 
         list.clear();
         assertEquals(0, list.size());
@@ -428,6 +428,68 @@ public abstract class AbstractListTest {
         assertTrue(list.contains("Element 0"));
         assertTrue(list.contains(null));
         assertFalse(list.contains("Element Zero"));
+
+    }
+
+    @Test
+    public void testEmptyIterator() {
+        List list = createList();
+        Iterator iterator = list.iterator();
+        assertNotNull(iterator);
+
+        assertFalse(iterator.hasNext());
+
+        assertThrows(NoSuchElementException.class, () -> {
+            iterator.next();
+        });
+
+        assertThrows(IllegalStateException.class, () -> {
+            iterator.remove();
+        });
+
+    }
+
+    @Test
+    public void testNextIterator() {
+        List list = createListWithThreeElements();
+        Iterator iterator = list.iterator();
+        assertNotNull(iterator);
+
+        assertTrue(iterator.hasNext());
+
+        assertEquals("Element 0", iterator.next());
+        assertTrue(iterator.hasNext());
+
+        assertEquals("Element 1", iterator.next());
+        assertTrue(iterator.hasNext());
+
+        assertEquals("Element 2", iterator.next());
+        assertFalse(iterator.hasNext());
+
+        assertThrows(NoSuchElementException.class, () -> {
+            iterator.next();
+        });
+
+    }
+
+    @Test
+    public void testRemoveIterator() {
+        List list = createListWithThreeElements();
+        Iterator iterator = list.iterator();
+        assertNotNull(iterator);
+
+        assertTrue(iterator.hasNext());
+
+        assertEquals("Element 0", iterator.next());
+        assertTrue(iterator.hasNext());
+
+        assertEquals("Element 1", iterator.next());
+        assertTrue(iterator.hasNext());
+
+        iterator.remove();
+
+        assertEquals("Element 2", iterator.next());
+        assertFalse(iterator.hasNext());
 
     }
 

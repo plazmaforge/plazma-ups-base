@@ -87,6 +87,11 @@ public class ArrayList<T> extends AbstractList<T> {
     }
 
     @Override
+    public Iterator<T> iterator() {
+        return new ArrayIterator();
+    }
+
+    @Override
     public String toString() {
         StringJoiner result = new StringJoiner(", ", "[", "]");
         for (int i = 0; i < size; i++) {
@@ -108,32 +113,32 @@ public class ArrayList<T> extends AbstractList<T> {
         return data.length;
     }
 
-    private class ArrayIterator<T> implements Iterator<T> {
+    private class ArrayIterator implements Iterator<T> {
 
-        int currIndex = -1;
-        int lastIndex;
+        int index = -1;
 
         @Override
         public boolean hasNext() {
-            return currIndex + 1 < size;
+            return index + 1 < size;
         }
 
         @Override
         public T next() {
-            if (currIndex >= size) {
+            if (!hasNext()) {
                 throw new NoSuchElementException();
             }
-            lastIndex = currIndex;
-            currIndex++;
-            return (T) ArrayList.this.get(currIndex);
+            index++;
+            return (T) ArrayList.this.get(index);
         }
 
         @Override
         public void remove() {
+            if (index < 0) {
+                throw new IllegalStateException();
+            }
             // TODO: Check concurrency
-            ArrayList.this.remove(currIndex);
-            currIndex = lastIndex;
-            lastIndex = 0;
+            ArrayList.this.remove(index);
+            index--;
         }
     }
 

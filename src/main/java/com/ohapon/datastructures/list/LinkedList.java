@@ -1,5 +1,6 @@
 package com.ohapon.datastructures.list;
 
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -49,6 +50,25 @@ public class LinkedList<T> extends AbstractList<T> {
             first.next.prev = null;
             first = first.next;
         } else if (index == size - 1) {
+            last.prev.next = null;
+            last = last.prev;
+        } else {
+            current.prev.next = current.next;
+            current.next.prev = current.prev;
+        }
+
+        size--;
+
+        return (T) current.data;
+    }
+
+    protected T removeByCurrent(Node current) {
+        if (size == 1) {
+            first = last = null;
+        } else if (current.prev == null) { // first: index = 0
+            first.next.prev = null;
+            first = first.next;
+        } else if (current.next == null) { // last: index = size - 1
             last.prev.next = null;
             last = last.prev;
         } else {
@@ -125,6 +145,11 @@ public class LinkedList<T> extends AbstractList<T> {
     }
 
     @Override
+    public Iterator<T> iterator() {
+        return new LinkedIterator();
+    }
+
+    @Override
     public String toString() {
         StringJoiner result = new StringJoiner(", ", "[", "]");
         Node curr = first;
@@ -167,6 +192,46 @@ public class LinkedList<T> extends AbstractList<T> {
         public Node(Object data) {
             this.data = data;
         }
+    }
+
+    private class LinkedIterator<T> implements Iterator<T> {
+
+        Node current;
+        boolean processing;
+
+        @Override
+        public boolean hasNext() {
+            return getNextNode() != null;
+        }
+
+        @Override
+        public T next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            Node next = getNextNode();
+            current = next;
+            processing = true;
+            return (T) next.data;
+        }
+
+        private Node getNextNode() {
+            if (!processing) {
+                return first;
+            }
+            return current == null ? null : current.next;
+        }
+
+        @Override
+        public void remove() {
+            if (current == null) {
+                throw new IllegalStateException();
+            }
+            Node prev = current.prev;
+            // TODO: Check concurrency
+            LinkedList.this.removeByCurrent(current);
+            current = prev;
+      }
     }
 
 }
