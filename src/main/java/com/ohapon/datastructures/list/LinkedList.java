@@ -228,7 +228,6 @@ public class LinkedList<T> extends AbstractList<T> {
                 throw new IllegalStateException();
             }
             Node prev = current.prev;
-            // TODO: Check concurrency
             LinkedList.this.removeByCurrent(current);
             current = prev;
       }

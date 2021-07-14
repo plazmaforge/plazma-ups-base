@@ -136,7 +136,6 @@ public class ArrayList<T> extends AbstractList<T> {
             if (index < 0) {
                 throw new IllegalStateException();
             }
-            // TODO: Check concurrency
             ArrayList.this.remove(index);
             index--;
         }
