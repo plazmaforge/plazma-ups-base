@@ -1,10 +1,10 @@
 package com.ohapon.reflection;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class ReflectionUtils {
@@ -67,20 +67,31 @@ public class ReflectionUtils {
         return result.toArray(new Class[0]);
     }
 
+    public static Field[] getPrivateFields(Class<?> type) {
+        checkType(type);
+        Field[] fields = getFields(type);
+        List<Field> result = new ArrayList<>();
+        for (Field field: fields) {
+            if (Modifier.isPrivate(field.getModifiers()) && !Modifier.isStatic(field.getModifiers())) {
+                result.add(field);
+            }
+        }
+        return result.toArray(new Field[0]);
+    }
+
+
     private static void checkType(Class<?> type) {
         if (type == null) {
             throw new IllegalArgumentException("Type must be not null");
         }
     }
 
-    private static void checkObject(Object object) {
-        if (object == null) {
-            throw new IllegalArgumentException("Object must be not null");
-        }
-    }
-
     private static Method[] getMethods(Class<?> type) {
         return type == null ? null : type.getDeclaredMethods();
+    }
+
+    private static Field[] getFields(Class<?> type) {
+        return type == null ? null : type.getDeclaredFields();
     }
 
 
