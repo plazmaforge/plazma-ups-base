@@ -12,10 +12,6 @@ public class AnnotationUtils {
     }
 
     public static <A extends Annotation> Method[] getAnnotationMethods(Class<?> type, Class<A> annotationType) {
-//        Annotation annotation = type.getAnnotation(annotationType);
-//        if (annotation == null) {
-//            return new Method[0];
-//        }
         Method[] methods = getMethods(type);
         List<Method> result = new ArrayList<>();
         Annotation a = null;
