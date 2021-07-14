@@ -3,6 +3,7 @@ package com.ohapon.reflection;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -55,32 +56,16 @@ public class ReflectionUtils {
     public static Class[] getParents(Class<?> type) {
         checkType(type);
         List<Class> result = new ArrayList<>();
-        Class<?> parent = type;
-        while ((parent = parent.getSuperclass()) != null) {
-            result.add(parent);
+        Class<?> superclass = type.getSuperclass();
+        if (superclass != null) {
+            result.add(superclass);
         }
-        Collections.reverse(result);
+        Class<?>[] interfaces = type.getInterfaces();
+        if (interfaces.length > 0) {
+            result.addAll(Arrays.asList(interfaces));
+        }
         return result.toArray(new Class[0]);
     }
-
-    public static Class[] getInterfaces(Class<?> type) {
-        checkType(type);
-        return type.getInterfaces();
-    }
-
-    ////
-
-    public static Method[] getMethodsWithoutParameters(Object object) {
-        checkObject(object);
-        return getMethodsWithoutParameters(object.getClass());
-    }
-
-    public static Method[] getFinalMethods(Object object) {
-        checkObject(object);
-        return getFinalMethods(object.getClass());
-    }
-
-    ////
 
     private static void checkType(Class<?> type) {
         if (type == null) {

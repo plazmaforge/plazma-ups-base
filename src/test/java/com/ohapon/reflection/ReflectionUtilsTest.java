@@ -20,7 +20,7 @@ public class ReflectionUtilsTest {
     @Test
     public void testGetMethodsWithoutParameters() throws Exception {
         Object object = "Hello";
-        Method[] methods = ReflectionUtils.getMethodsWithoutParameters(object);
+        Method[] methods = ReflectionUtils.getMethodsWithoutParameters(object.getClass());
         for (Method method: methods) {
             method.invoke(object);
         }
@@ -29,7 +29,7 @@ public class ReflectionUtilsTest {
     @Test
     public void testFinalMethods() {
         Object object = new Object();
-        Method[] methods = ReflectionUtils.getFinalMethods(object);
+        Method[] methods = ReflectionUtils.getFinalMethods(object.getClass());
         for (Method method: methods) {
             System.out.println(method);
         }
