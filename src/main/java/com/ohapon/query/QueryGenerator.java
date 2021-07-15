@@ -66,6 +66,8 @@ public class QueryGenerator {
         Query query = createQuery(clazz);
         validateColumns(query);
         validateIdColumn(query);
+        Object id = getValue(value, query.getIdColumn());
+        requireNonNull(id, "Id must be not null");
 
         // UPDATE table_name
         // SET column1 = value1, column2 = value2, ...
@@ -93,13 +95,14 @@ public class QueryGenerator {
         builder.append(" WHERE ");
         builder.append(query.getIdColumn().getName());
         builder.append(" = ");
-        builder.append(getValue(value, query.getIdColumn()));
+        builder.append(toSqlValue(id));
 
         return builder.toString();
     }
 
     public String getById(Class<?> clazz, Object id) {
         requireNonNull(clazz, "Class must be not null");
+        requireNonNull(id, "Id must be not null");
 
         Query query = createQuery(clazz);
         validateColumns(query);
@@ -130,6 +133,7 @@ public class QueryGenerator {
 
     public String delete(Class<?> clazz, Object id) {
         requireNonNull(clazz, "Class must be not null");
+        requireNonNull(id, "Id must be not null");
 
         Query query = createQuery(clazz);
         validateIdColumn(query);

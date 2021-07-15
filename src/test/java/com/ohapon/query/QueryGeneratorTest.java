@@ -21,6 +21,16 @@ public class QueryGeneratorTest {
     }
 
     @Test
+    public void testInsertWithNullValue() {
+        Person person = new Person();
+        person.setId(100);
+        person.setName(null);
+        person.setSalary(5000.0);
+        String query = new QueryGenerator().insert(person);
+        assertEquals("INSERT INTO persons (id, person_name, salary) VALUES (100, NULL, 5000.0)", query);
+    }
+
+    @Test
     public void testUpdate() {
         Person person = new Person();
         person.setId(100);
@@ -28,6 +38,16 @@ public class QueryGeneratorTest {
         person.setSalary(5000.0);
         String query = new QueryGenerator().update(person);
         assertEquals("UPDATE persons SET person_name = 'MyPerson', salary = 5000.0 WHERE id = 100", query);
+    }
+
+    @Test
+    public void testUpdateWithNullValue() {
+        Person person = new Person();
+        person.setId(100);
+        person.setName(null);
+        person.setSalary(5000.0);
+        String query = new QueryGenerator().update(person);
+        assertEquals("UPDATE persons SET person_name = NULL, salary = 5000.0 WHERE id = 100", query);
     }
 
     @Test
