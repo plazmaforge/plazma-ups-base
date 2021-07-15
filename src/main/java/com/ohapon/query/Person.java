@@ -3,7 +3,7 @@ package com.ohapon.query;
 @Table(name = "persons")
 public class Person {
 
-    @Column
+    @Id
     private int id;
 
     @Column(name = "person_name")
