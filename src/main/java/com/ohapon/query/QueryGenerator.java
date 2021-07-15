@@ -195,8 +195,7 @@ public class QueryGenerator {
             value = column.getField().get(object);
             return toSqlValue(value);
         } catch (IllegalArgumentException | IllegalAccessException e) {
-            // TODO: throw QueryGeneration exception
-            return null;
+            throw new IllegalArgumentException("Can't generate query", e);
         }
     }
 
