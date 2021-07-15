@@ -12,6 +12,7 @@ public class QueryGenerator {
         requireNonNull(clazz, "Class must be not null");
 
         Query query = createQuery(clazz);
+        validateColumns(query);
 
         StringBuilder builder = new StringBuilder("SELECT ");
         StringJoiner joiner = new StringJoiner(", ");
@@ -33,6 +34,7 @@ public class QueryGenerator {
         Class<?> clazz = value.getClass();
 
         Query query = createQuery(clazz);
+        validateColumns(query);
 
         // INSERT INTO table_name (column1, column2, column3, ...)
         // VALUES (value1, value2, value3, ...);
@@ -62,6 +64,8 @@ public class QueryGenerator {
         Class<?> clazz = value.getClass();
 
         Query query = createQuery(clazz);
+        validateColumns(query);
+        validateIdColumn(query);
 
         // UPDATE table_name
         // SET column1 = value1, column2 = value2, ...
@@ -98,6 +102,8 @@ public class QueryGenerator {
         requireNonNull(clazz, "Class must be not null");
 
         Query query = createQuery(clazz);
+        validateColumns(query);
+        validateIdColumn(query);
 
         // SELECT column1, column2 ...
         // FROM table_name
@@ -126,6 +132,7 @@ public class QueryGenerator {
         requireNonNull(clazz, "Class must be not null");
 
         Query query = createQuery(clazz);
+        validateIdColumn(query);
 
         // DELETE
         // FROM table_name
@@ -197,6 +204,18 @@ public class QueryGenerator {
             return "'" + value + "'";
         }
         return value.toString();
+    }
+
+    private void validateColumns(Query query) {
+        if (query.getColumns().isEmpty()) {
+            throw new IllegalArgumentException("Can't generate query: Columns are empty");
+        }
+    }
+
+    private void validateIdColumn(Query query) {
+        if (query.getIdColumn() == null) {
+            throw new IllegalArgumentException("Can't generate query: Id column is missing");
+        }
     }
 
     private static class QueryColumn {
