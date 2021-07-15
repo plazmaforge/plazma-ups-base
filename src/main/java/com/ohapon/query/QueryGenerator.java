@@ -3,12 +3,13 @@ package com.ohapon.query;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import static java.util.Objects.*;
 import java.util.StringJoiner;
 
 public class QueryGenerator {
 
     public String getAll(Class<?> clazz) {
-        checkClass(clazz);
+        requireNonNull(clazz, "Class must be not null");
 
         Query query = createQuery(clazz);
 
@@ -27,7 +28,8 @@ public class QueryGenerator {
     }
 
     public String insert(Object value) {
-        checkObject(value);
+        requireNonNull(value, "Value must be not null");
+
         Class<?> clazz = value.getClass();
 
         Query query = createQuery(clazz);
@@ -41,7 +43,8 @@ public class QueryGenerator {
 
         for (QueryColumn column: query.getColumns()) {
             columnJoiner.add(column.getName());
-            valueJoiner.add(toSqlValue(value, column));
+            Object columnValue = getValue(value, column);
+            valueJoiner.add(toSqlValue(columnValue));
         }
 
         builder.append(query.getTableName());
@@ -55,7 +58,7 @@ public class QueryGenerator {
     }
 
     public String update(Object value) {
-        checkObject(value);
+        requireNonNull(value, "Value must be not null");
         Class<?> clazz = value.getClass();
 
         Query query = createQuery(clazz);
@@ -76,7 +79,8 @@ public class QueryGenerator {
             }
             builder.append(column.getName());
             builder.append(" = ");
-            builder.append(toSqlValue(value, column));
+            Object columnValue = getValue(value, column);
+            builder.append(toSqlValue(columnValue));
             if (i < query.getColumns().size() - 1) {
                 builder.append(", ");
             }
@@ -85,14 +89,13 @@ public class QueryGenerator {
         builder.append(" WHERE ");
         builder.append(query.getIdColumn().getName());
         builder.append(" = ");
-        builder.append(toSqlValue(value, query.getIdColumn()));
+        builder.append(getValue(value, query.getIdColumn()));
 
         return builder.toString();
     }
 
     public String getById(Class<?> clazz, Object id) {
-
-        checkClass(clazz);
+        requireNonNull(clazz, "Class must be not null");
 
         Query query = createQuery(clazz);
 
@@ -120,7 +123,7 @@ public class QueryGenerator {
     }
 
     public String delete(Class<?> clazz, Object id) {
-        checkClass(clazz);
+        requireNonNull(clazz, "Class must be not null");
 
         Query query = createQuery(clazz);
 
@@ -146,23 +149,10 @@ public class QueryGenerator {
         return annotation.name().isEmpty() ? clazz.getName() : annotation.name();
     }
 
-    private QueryColumn createColumn(Field field) {
+    private QueryColumn createQueryColumn(Field field) {
         Column columnAnnotation = field.getAnnotation(Column.class);
-        String name = null;
-        boolean key = false;
-        if (columnAnnotation == null) {
-            Id idAnnotation = field.getAnnotation(Id.class);
-            if (idAnnotation == null) {
-                return null;
-            }
-            name = idAnnotation.name().isEmpty() ? field.getName() : idAnnotation.name();
-            key = true;
-        } else {
-            name = columnAnnotation.name().isEmpty() ? field.getName() : columnAnnotation.name();
-        }
-        if (name == null) {
-            return null;
-        }
+        String name = columnAnnotation.name().isEmpty() ? field.getName() : columnAnnotation.name();;
+        boolean key = field.isAnnotationPresent(Id.class);
         return new QueryColumn(name, field, key);
     }
 
@@ -173,13 +163,12 @@ public class QueryGenerator {
 
         List<QueryColumn> columns = new ArrayList<>();
         for (Field field : clazz.getDeclaredFields()) {
-            QueryColumn column = createColumn(field);
-            if (column == null) {
-                continue;
-            }
-            columns.add(column);
-            if (column.isKey()) {
-                query.setIdColumn(column);
+            if (field.isAnnotationPresent(Column.class)) {
+                QueryColumn column = createQueryColumn(field);
+                columns.add(column);
+                if (column.isKey()) {
+                    query.setIdColumn(column);
+                }
             }
         }
 
@@ -188,12 +177,13 @@ public class QueryGenerator {
 
     }
 
-    private String toSqlValue(Object object, QueryColumn column) {
+    private Object getValue(Object object, QueryColumn column) {
         Object value = null;
         try {
-            column.getField().setAccessible(true);
-            value = column.getField().get(object);
-            return toSqlValue(value);
+            Field field = column.getField();
+            field.setAccessible(true);
+            value = field.get(object);
+            return value;
         } catch (IllegalArgumentException | IllegalAccessException e) {
             throw new IllegalArgumentException("Can't generate query", e);
         }
@@ -203,29 +193,10 @@ public class QueryGenerator {
         if (value == null) {
             return "NULL";
         }
-        if (value instanceof String) {
+        if (value.getClass() == String.class) {
             return "'" + value + "'";
         }
-        // TODO: format value
         return value.toString();
-    }
-
-    private void checkClass(Class<?> clazz) {
-        if (clazz == null) {
-            throw new IllegalArgumentException("Class must be not null");
-        }
-    }
-
-    private void checkObject(Object object) {
-        if (object == null) {
-            throw new IllegalArgumentException("Object must be not null");
-        }
-    }
-
-    private void checkColumns(List<String> columnNames) {
-        if (columnNames.isEmpty()) {
-            throw new IllegalArgumentException("Can't generate query: No columns");
-        }
     }
 
     private static class QueryColumn {
@@ -235,14 +206,6 @@ public class QueryGenerator {
         private Field field;
 
         private boolean key;
-
-        public QueryColumn() {
-        }
-
-        public QueryColumn(String name, Field field) {
-            this.name = name;
-            this.field = field;
-        }
 
         public QueryColumn(String name, Field field, boolean key) {
             this.name = name;

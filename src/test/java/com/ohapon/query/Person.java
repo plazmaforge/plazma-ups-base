@@ -4,6 +4,7 @@ package com.ohapon.query;
 public class Person {
 
     @Id
+    @Column
     private int id;
 
     @Column(name = "person_name")
