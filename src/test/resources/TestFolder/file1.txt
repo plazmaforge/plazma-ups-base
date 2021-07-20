@@ -1,1 +1,3 @@
 file1:text
+What is your name? My name is 'Tiko'
+Hello text. I am text!
