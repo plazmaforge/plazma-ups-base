@@ -1,16 +1,13 @@
 package com.ohapon.file;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
 public class FileAnalyzer {
 
-    private static final String SENTENCE_SEPARATORS = ".!?";
+    private static final String SENTENCE_SEPARATORS = ".!?\r\n";
 
     public static void main(String[] args) {
 
@@ -24,77 +21,71 @@ public class FileAnalyzer {
         String fileName = args[0];
         String word = args[1];
 
-        analyzer.analyze(fileName, word);
+        Result result = analyzer.analyze(fileName, word);
+        analyzer.printResult(result);
 
     }
 
-    protected void analyze(String fileName, String word) {
+    public Result analyze(String fileName, String word) {
         try {
-            Result result = analyzeText(fileName, word);
-            processResult(result);
+            String content = readContent(fileName);
+            String[] sentences = splitSentences(content);
+            Result result = analyzeSentences(sentences, word);
+            return result;
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-
     }
 
-    protected Result analyzeText(String fileName, String word) throws IOException {
+    protected Result analyzeSentences(String[] sentences, String word) {
         Result result = new Result();
-        if (fileName == null || fileName.isEmpty()) {
-            result.error = "File name is empty";
-            return result;
-        }
-        if (word == null || word.isEmpty()) {
-            result.error = "Word is empty";
-            return result;
-        }
-        File file = new File(fileName);
-        if (!file.exists()) {
-            result.error = "File not found: " + fileName;
-            return result;
+        int total = 0;
+        int count = 0;
+        List<String> resultSentences = new ArrayList<>();
+
+        for (String sentence: sentences) {
+            count = countWord(sentence, word);
+            if (count > 0) {
+                resultSentences.add(sentence.trim());
+                total += count;
+            }
         }
 
-        BufferedReader reader = null;
-        List<String> resultSentences = new ArrayList<>();
-        try {
-            reader = new BufferedReader(new FileReader(file));
-            String line = null;
-            int total = 0;
-            int count = 0;
-            while ((line = reader.readLine()) != null) {
-                String[] sentences = splitSentences(line);
-                for (String sentence: sentences) {
-                    count = countWord(sentence, word);
-                    if (count > 0) {
-                        resultSentences.add(sentence.trim());
-                        total += count;
-                    }
-                }
-            }
-            result.sentences = resultSentences.toArray(new String[0]);
-            result.total = total;
-        } finally {
-            if (reader != null) {
-                reader.close();
-            }
-        }
+        result.setSentences(resultSentences.toArray(new String[0]));
+        result.setTotal(total);
         return result;
     }
 
-    protected void processResult(Result result) {
-        if (result.error != null) {
-            printError(result.error);
-            return;
+    protected String readContent(String fileName) throws IOException {
+        if (fileName == null || fileName.isEmpty()) {
+            throw new IllegalArgumentException("File name is empty");
         }
-        if (result.sentences != null) {
-            for (String sentence: result.sentences) {
+        InputStream is = new FileInputStream(fileName);
+        return readContent(is);
+    }
+
+    protected String readContent(InputStream is) throws IOException {
+        BufferedInputStream bis = new BufferedInputStream(is);
+        int ch;
+        StringBuilder sb = new StringBuilder();
+        while((ch = bis.read()) != -1) {
+            sb.append((char) ch);
+        }
+        bis.close();
+        is.close();
+        return sb.toString();
+    }
+
+    protected void printResult(Result result) {
+        if (result.getSentences() != null) {
+            for (String sentence: result.getSentences()) {
                 printMessage(sentence);
             }
         }
-        printMessage("Total: " + result.total);
+        printMessage("Total: " + result.getTotal());
     }
 
-    public int countWord(String sentence, String word) {
+    protected int countWord(String sentence, String word) {
         int index = -word.length();
         int count = 0;
         while ((index = sentence.indexOf(word, (index + word.length()))) != -1) {
@@ -103,11 +94,11 @@ public class FileAnalyzer {
         return count;
     }
 
-    private String[] splitSentences(String str) {
+    protected String[] splitSentences(String str) {
         return split(str, SENTENCE_SEPARATORS);
     }
 
-    private String[] split(String str, String separators) {
+    protected String[] split(String str, String separators) {
         StringTokenizer tokens = new StringTokenizer(str, separators, false);
         String[] result = new String[tokens.countTokens()];
         int i = 0;
@@ -131,9 +122,27 @@ public class FileAnalyzer {
     }
 
     public static class Result {
-        String[] sentences;
-        int total;
-        String error;
+        private String[] sentences;
+        private int total;
+
+        public Result() {
+        }
+
+        public String[] getSentences() {
+            return sentences;
+        }
+
+        public void setSentences(String[] sentences) {
+            this.sentences = sentences;
+        }
+
+        public int getTotal() {
+            return total;
+        }
+
+        public void setTotal(int total) {
+            this.total = total;
+        }
     }
 
 }

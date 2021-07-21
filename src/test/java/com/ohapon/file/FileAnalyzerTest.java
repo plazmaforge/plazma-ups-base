@@ -19,33 +19,31 @@ public class FileAnalyzerTest {
     }
 
     @Test
-    public void testAnalyzeText() throws Exception {
+    public void testAnalyze() throws Exception {
         String fileName = getFileName("TestFolder/file1.txt");
         FileAnalyzer analyzer = new FileAnalyzer();
-        FileAnalyzer.Result result = analyzer.analyzeText(fileName, "text");
+        FileAnalyzer.Result result = analyzer.analyze(fileName, "text");
 
         assertNotNull(result);
-        assertNull(result.error);
-        assertEquals(3, result.total);
+        assertEquals(3, result.getTotal());
 
-        assertNotNull(result.sentences);
-        assertEquals(3, result.sentences.length);
+        assertNotNull(result.getSentences());
+        assertEquals(3, result.getSentences().length);
 
-        assertEquals("file1:text", result.sentences[0]);
-        assertEquals("Hello text", result.sentences[1]);
-        assertEquals("I am text", result.sentences[2]);
+        assertEquals("file1:text", result.getSentences()[0]);
+        assertEquals("Hello text", result.getSentences()[1]);
+        assertEquals("I am text", result.getSentences()[2]);
 
     }
 
     @Test
-    public void testAnalyzeTextNotFound() throws Exception {
+    public void testAnalyzeNotFound() throws Exception {
         String fileName = getFileName("TestFolder/file1.txt");
         FileAnalyzer analyzer = new FileAnalyzer();
-        FileAnalyzer.Result result = analyzer.analyzeText(fileName, "zero");
+        FileAnalyzer.Result result = analyzer.analyze(fileName, "zero");
 
         assertNotNull(result);
-        assertNull(result.error);
-        assertEquals(0, result.total);
+        assertEquals(0, result.getTotal());
 
     }
 
@@ -54,19 +52,9 @@ public class FileAnalyzerTest {
     public void testAnalyzeFileNotFound() throws Exception {
         String fileName = getFileName("TestFolder/file1000000.txt");
         FileAnalyzer analyzer = new FileAnalyzer();
-        FileAnalyzer.Result result = analyzer.analyzeText(fileName, "text");
-
-        assertNotNull(result);
-        assertNotNull(result.error);
-        assertTrue(result.error.startsWith("File not found"));
-
-    }
-
-    @Test
-    public void testAnalyze() {
-        String fileName = getFileName("TestFolder/file1.txt");
-        FileAnalyzer analyzer = new FileAnalyzer();
-        analyzer.analyze(fileName, "text");
+        assertThrows(RuntimeException.class, () -> {
+            analyzer.analyze(fileName, "text");
+        });
     }
 
 }
