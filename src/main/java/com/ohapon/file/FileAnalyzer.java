@@ -38,6 +38,10 @@ public class FileAnalyzer {
     }
 
     protected Result analyzeSentences(String[] sentences, String word) {
+        if (word == null || word.isEmpty()) {
+            throw new IllegalArgumentException("File name is empty");
+        }
+
         Result result = new Result();
         int total = 0;
         int count = 0;
@@ -103,7 +107,7 @@ public class FileAnalyzer {
         String[] result = new String[tokens.countTokens()];
         int i = 0;
         while (tokens.hasMoreTokens()) {
-            result[i++] = tokens.nextToken();
+            result[i++] = tokens.nextToken().trim();
         }
         return result;
     }

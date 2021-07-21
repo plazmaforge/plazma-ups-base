@@ -19,7 +19,7 @@ public class FileAnalyzerTest {
     }
 
     @Test
-    public void testAnalyze() throws Exception {
+    public void testAnalyze() {
         String fileName = getFileName("TestFolder/file1.txt");
         FileAnalyzer analyzer = new FileAnalyzer();
         FileAnalyzer.Result result = analyzer.analyze(fileName, "text");
@@ -37,7 +37,7 @@ public class FileAnalyzerTest {
     }
 
     @Test
-    public void testAnalyzeNotFound() throws Exception {
+    public void testAnalyzeWordNotFound() {
         String fileName = getFileName("TestFolder/file1.txt");
         FileAnalyzer analyzer = new FileAnalyzer();
         FileAnalyzer.Result result = analyzer.analyze(fileName, "zero");
@@ -47,14 +47,81 @@ public class FileAnalyzerTest {
 
     }
 
-
     @Test
-    public void testAnalyzeFileNotFound() throws Exception {
+    public void testAnalyzeFileNotFound() {
         String fileName = getFileName("TestFolder/file1000000.txt");
         FileAnalyzer analyzer = new FileAnalyzer();
         assertThrows(RuntimeException.class, () -> {
             analyzer.analyze(fileName, "text");
         });
+    }
+
+    @Test
+    public void testAnalyzeWithEmptyFileName() {
+        FileAnalyzer analyzer = new FileAnalyzer();
+        assertThrows(IllegalArgumentException.class, () -> {
+            analyzer.analyze(null, "text");
+        });
+        assertThrows(IllegalArgumentException.class, () -> {
+            analyzer.analyze("", "text");
+        });
+
+    }
+
+    @Test
+    public void testAnalyzeWithEmptyWord() {
+        String fileName = getFileName("TestFolder/file1.txt");
+        FileAnalyzer analyzer = new FileAnalyzer();
+        assertThrows(IllegalArgumentException.class, () -> {
+            analyzer.analyze(fileName, null);
+        });
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            analyzer.analyze(fileName, "");
+        });
+
+    }
+
+    @Test
+    public void testSplitSentences() {
+        FileAnalyzer analyzer = new FileAnalyzer();
+        String content = "text1. text2!text3?\ntext4";
+        String[] sentences = analyzer.splitSentences(content);
+
+        assertNotNull(sentences);
+        assertEquals(4, sentences.length);
+
+        assertEquals("text1", sentences[0]);
+        assertEquals("text2", sentences[1]);
+        assertEquals("text3", sentences[2]);
+        assertEquals("text4", sentences[3]);
+
+    }
+
+    @Test
+    public void testSplit() {
+        FileAnalyzer analyzer = new FileAnalyzer();
+        String content = "text1. text2!text3?\ntext4";
+        String[] sentences = analyzer.split(content, "\r\n.!?");
+
+        assertNotNull(sentences);
+        assertEquals(4, sentences.length);
+
+        assertEquals("text1", sentences[0]);
+        assertEquals("text2", sentences[1]);
+        assertEquals("text3", sentences[2]);
+        assertEquals("text4", sentences[3]);
+
+    }
+
+    @Test
+    public void testReadContent() throws Exception {
+        String fileName = getFileName("TestFolder/file1.txt");
+        FileAnalyzer analyzer = new FileAnalyzer();
+        String content = analyzer.readContent(fileName);
+
+        assertEquals("file1:text\nWhat is your name? My name is 'Tiko'\nHello text. I am text!", content);
+
     }
 
 }
