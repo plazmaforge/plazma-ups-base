@@ -7,32 +7,31 @@ import java.util.Objects;
 public class HashMap<K, V> implements Map<K, V> {
 
     private static final int DEFAULT_INITIAL_CAPACITY = 10;
-
-    private Bucket<K, V>[] buckets = new Bucket[DEFAULT_INITIAL_CAPACITY];
+    private List<Entry<K, V>>[] buckets = new List[DEFAULT_INITIAL_CAPACITY];
     private int size;
 
     @Override
     public V put(K key, V value) {
-        Bucket<K, V> bucket = findBucketWithCreate(key);
-        return put(bucket.entries, key, value);
+        List<Entry<K, V>> bucket = findBucketWithCreate(key);
+        return put(bucket, key, value);
     }
 
     @Override
     public V get(K key) {
-        Bucket<K, V> bucket = findBucket(key);
-        return bucket == null ? null : get(bucket.entries, key);
+        List<Entry<K, V>> bucket = findBucket(key);
+        return bucket == null ? null : get(bucket, key);
     }
 
     @Override
     public boolean containsKey(K key) {
-        Bucket<K, V> bucket = findBucket(key);
-        return bucket == null ? false : containsKey(bucket.entries, key);
+        List<Entry<K, V>> bucket = findBucket(key);
+        return bucket == null ? false : containsKey(bucket, key);
     }
 
     @Override
     public V remove(K key) {
-        Bucket<K, V> bucket = findBucket(key);
-        return bucket == null ? null : remove(bucket.entries, key);
+        List<Entry<K, V>> bucket = findBucket(key);
+        return bucket == null ? null : remove(bucket, key);
     }
 
     @Override
@@ -50,22 +49,22 @@ public class HashMap<K, V> implements Map<K, V> {
         return Math.abs(hash) % buckets.length;
     }
 
-    private Bucket<K, V> findBucket(K key) {
+    private List<Entry<K, V>> findBucket(K key) {
         int index = getIndex(key);
         return buckets[index];
     }
 
-    private Bucket<K, V> findBucketWithCreate(K key) {
+    private List<Entry<K, V>> findBucketWithCreate(K key) {
         int index = getIndex(key);
-        Bucket<K, V> bucket = buckets[index];
+        List<Entry<K, V>> bucket = buckets[index];
         if (bucket == null) {
-            bucket = new Bucket();
+            bucket = new ArrayList<Entry<K, V>>();
             buckets[index] = bucket;
         }
         return bucket;
     }
 
-    private static class Entry<K, V> {
+    public static class Entry<K, V> {
         private K key;
         private V value;
 
@@ -85,15 +84,6 @@ public class HashMap<K, V> implements Map<K, V> {
         public void setValue(V value) {
             this.value = value;
         }
-    }
-
-    private class Bucket<K, V> {
-
-        private List<Entry<K, V>> entries = new ArrayList<>();
-
-        public Bucket() {
-        }
-
     }
 
     private Entry<K, V> findEntry(List<Entry<K, V>> entries, K key) {
