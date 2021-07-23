@@ -1,13 +1,11 @@
 package com.ohapon.datastructures.map;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class HashMap<K, V> implements Map<K, V> {
 
-    private static final int DEFAULT_INITIAL_CAPACITY = 10;
-    private List<Entry<K, V>>[] buckets = new List[DEFAULT_INITIAL_CAPACITY];
+    private static final int DEFAULT_CAPACITY = 10;
+    private List<Entry<K, V>>[] buckets = new List[DEFAULT_CAPACITY];
     private int size;
 
     @Override
@@ -49,6 +47,10 @@ public class HashMap<K, V> implements Map<K, V> {
         return Math.abs(hash) % buckets.length;
     }
 
+    private List<Map.Entry<K, V>> getBucket(int index) {
+        return buckets[index];
+    }
+
     private List<Entry<K, V>> findBucket(K key) {
         int index = getIndex(key);
         return buckets[index];
@@ -62,28 +64,6 @@ public class HashMap<K, V> implements Map<K, V> {
             buckets[index] = bucket;
         }
         return bucket;
-    }
-
-    public static class Entry<K, V> {
-        private K key;
-        private V value;
-
-        public Entry(K key, V value) {
-            this.key = key;
-            this.value = value;
-        }
-
-        public K getKey() {
-            return key;
-        }
-
-        public V getValue() {
-            return value;
-        }
-
-        public void setValue(V value) {
-            this.value = value;
-        }
     }
 
     private Entry<K, V> findEntry(List<Entry<K, V>> entries, K key) {
@@ -104,7 +84,7 @@ public class HashMap<K, V> implements Map<K, V> {
             oldValue = entry.getValue();
             entry.setValue(value);
         } else {
-            entry = new Entry<>(key, value);
+            entry = new EntryImpl<>(key, value);
             entries.add(entry);
             size++;
         }
@@ -132,5 +112,84 @@ public class HashMap<K, V> implements Map<K, V> {
         return oldValue;
     }
 
+    @Override
+    public Iterator<Entry<K, V>> iterator() {
+        return new MapIterator();
+    }
+
+    private static class EntryImpl<K, V> implements Map.Entry<K, V> {
+        private K key;
+        private V value;
+
+        public EntryImpl(K key, V value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        public K getKey() {
+            return key;
+        }
+
+        public V getValue() {
+            return value;
+        }
+
+        public void setValue(V value) {
+            this.value = value;
+        }
+    }
+
+    private class MapIterator implements Iterator<Entry<K, V>> {
+
+        int bucketIndex = -1;
+        int entryIndex = -1;
+        int index = -1;
+        List<Entry<K, V>> bucket;
+        Entry<K, V> entry;
+
+        @Override
+        public boolean hasNext() {
+            return index + 1 < size;
+        }
+
+        @Override
+        public Map.Entry<K, V> next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+
+            if (entryIndex + 1 >= (bucket == null ? 0: bucket.size())) {
+                nextBucket();
+            }
+            entryIndex++;
+
+
+            entry = bucket.get(entryIndex);
+            index++;
+            return entry;
+        }
+
+        @Override
+        public void remove() {
+            if (index < 0) {
+                throw new IllegalStateException();
+            }
+            HashMap.this.remove(entry.getKey());
+            index--;
+        }
+
+        private void nextBucket() {
+            while (bucketIndex < buckets.length) {
+                bucketIndex++;
+                entryIndex = -1;
+                bucket = getBucket(bucketIndex);
+
+                if (bucket != null && !bucket.isEmpty()) {
+                    break;
+                }
+            }
+        }
+
+    }
 
 }
