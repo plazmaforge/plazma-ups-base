@@ -1,17 +1,13 @@
 package com.ohapon.file;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.io.*;
 
 public class FileManager {
 
     public static int countFiles(String path) {
         checkPath(path);
         File file = new File(path);
+        checkFileExists(file);
         return countFiles(file, false);
     }
 
@@ -37,17 +33,37 @@ public class FileManager {
     public static int countDirs(String path) {
         checkPath(path);
         File file = new File(path);
+        checkFileExists(file);
         return countFiles(file, true);
     }
 
     public static void copy(String from, String to) throws IOException {
         checkPathFromTo(from, to);
-        Files.copy(Paths.get(from), Paths.get(to), StandardCopyOption.REPLACE_EXISTING);
+        File fileFrom = new File(from);
+        checkFileExists(fileFrom);
+        File fileTo = new File(to);
+        copyFile(fileFrom, fileTo);
     }
 
     public static void move(String from, String to) throws IOException {
         checkPathFromTo(from, to);
-        Files.move(Paths.get(from), Paths.get(to), StandardCopyOption.REPLACE_EXISTING);
+        File fileFrom = new File(from);
+        checkFileExists(fileFrom);
+        File fileTo = new File(to);
+        copyFile(fileFrom, fileTo);
+        fileFrom.delete();
+    }
+
+    private static void copyFile(File fileFrom, File fileTo) throws IOException {
+        try (
+            InputStream is = new FileInputStream(fileFrom);
+            OutputStream os = new FileOutputStream(fileTo)) {
+            byte data[] = new byte[8192];
+            int i = 0;
+            while ((i = is.read(data)) != -1) {
+                os.write(data, 0, i);
+            }
+        }
     }
 
     private static void checkPath(String path) {
@@ -62,6 +78,12 @@ public class FileManager {
         }
         if (to == null || to.isEmpty()) {
             throw new IllegalArgumentException("Path 'to' must be not empty");
+        }
+    }
+
+    private static void checkFileExists(File file) {
+        if (!file.exists()) {
+            throw new IllegalArgumentException("File not found: " + file.getAbsolutePath());
         }
     }
 

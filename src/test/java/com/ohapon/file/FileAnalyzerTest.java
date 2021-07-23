@@ -3,6 +3,8 @@ package com.ohapon.file;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.FileNotFoundException;
+
 import static org.junit.Assert.*;
 
 public class FileAnalyzerTest {
@@ -48,7 +50,7 @@ public class FileAnalyzerTest {
     }
 
     @Test
-    public void testAnalyzeFileNotFound() {
+    public void testThrowExceptionWhenFileNotFound() {
         String fileName = getFileName("TestFolder/file1000000.txt");
         FileAnalyzer analyzer = new FileAnalyzer();
         assertThrows(RuntimeException.class, () -> {
@@ -57,7 +59,7 @@ public class FileAnalyzerTest {
     }
 
     @Test
-    public void testAnalyzeWithEmptyFileName() {
+    public void testThrowExceptionWhenWithEmptyFileName() {
         FileAnalyzer analyzer = new FileAnalyzer();
         assertThrows(IllegalArgumentException.class, () -> {
             analyzer.analyze(null, "text");
@@ -69,7 +71,7 @@ public class FileAnalyzerTest {
     }
 
     @Test
-    public void testAnalyzeWithEmptyWord() {
+    public void testThrowExceptionWhenWithEmptyWord() {
         String fileName = getFileName("TestFolder/file1.txt");
         FileAnalyzer analyzer = new FileAnalyzer();
         assertThrows(IllegalArgumentException.class, () -> {
@@ -115,12 +117,38 @@ public class FileAnalyzerTest {
     }
 
     @Test
+    public void testCountWord() {
+        FileAnalyzer analyzer = new FileAnalyzer();
+        int count = analyzer.countWord("Hello text, I am text", "text");
+        assertEquals(2, count);
+
+    }
+
+    @Test
+    public void testCountWordNotFound() {
+        FileAnalyzer analyzer = new FileAnalyzer();
+        int count = analyzer.countWord("Hello text, I am text", "zero");
+        assertEquals(0, count);
+
+    }
+
+    @Test
     public void testReadContent() throws Exception {
         String fileName = getFileName("TestFolder/file1.txt");
         FileAnalyzer analyzer = new FileAnalyzer();
         String content = analyzer.readContent(fileName);
 
         assertEquals("file1:text\nWhat is your name? My name is 'Tiko'\nHello text. I am text!", content);
+
+    }
+
+    @Test
+    public void testReadContentThrowExceptionWhenReadContent() throws Exception {
+        String fileName = getFileName("TestFolder/file1000000.txt");
+        FileAnalyzer analyzer = new FileAnalyzer();
+        assertThrows(FileNotFoundException.class, () -> {
+            analyzer.readContent(fileName);
+        });
 
     }
 
