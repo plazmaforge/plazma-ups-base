@@ -10,6 +10,7 @@ public class WebServer {
 
     private static final int DEFAULT_PORT = 3000;
     private int port;
+    private String webAppPath;
     private boolean processing;
 
     public WebServer() {
@@ -18,6 +19,22 @@ public class WebServer {
 
     public WebServer(int port) {
         this.port = port;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public String getWebAppPath() {
+        return webAppPath;
+    }
+
+    public void setWebAppPath(String webAppPath) {
+        this.webAppPath = webAppPath;
     }
 
     public void start() throws IOException {
@@ -41,28 +58,53 @@ public class WebServer {
 
                     if (lines.length == 0) {
                         handleBadRequest(writer);
-                        return;
+                        continue;
                     }
 
                     String line = lines[0];
                     String[] elements = line.split(" ");
                     if (elements.length < 2) {
                         handleBadRequest(writer);
-                        return;
+                        continue;
                     }
                     String method = elements[0];
-                    String path = elements[1];
 
                     if (!method.startsWith("GET")) {
                         handleInternalServerError(writer);
-                        return;
+                        continue;
+                    }
+
+                    String webAppDir = getWebAppDir();
+                    if (webAppDir == null || webAppDir.isEmpty()) {
+                        // Configuration error
+                        handleInternalServerError(writer);
+                        continue;
+                    }
+
+                    String path = elements[1];
+                    //System.out.println("PATH:" + path);
+                    if (path.equals("/")) {
+                        path = "/index.html";
+                    }
+
+                    String fileName = getFileName(path);
+                    //System.out.println("FILE:" + fileName);
+                    String fileContent = null;
+
+                    try {
+                        fileContent = readFileContent(fileName);
+                    } catch (IOException e) {
+                        handleNotFound(writer);
+                        continue;
                     }
 
                     // write response
                     writer.write("HTTP/1.1 200 OK");
                     writer.newLine();
                     writer.newLine();
-                    writer.write("Hello world!");
+
+                    writer.write(fileContent);
+                    //writer.write("Hello world!");
 
                 }
 
@@ -86,8 +128,36 @@ public class WebServer {
         return lines.toArray(new String[0]);
     }
 
+    protected String readFileContent(String fileName) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)))) {
+            StringBuilder builder = new StringBuilder();
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                builder.append(line);
+                builder.append('\n');
+            }
+            return builder.toString();
+        }
+    }
+
+    protected String getFileName(String path) {
+        return getWebAppDir() + path;
+    }
+
+    protected String getWebAppDir() {
+        // TODO: For test only
+        if (webAppPath == null) {
+            webAppPath = "src/test/resources/WebApp";
+        }
+        return System.getProperty("user.dir") + "/" + webAppPath;
+    }
+
     protected void handleBadRequest(BufferedWriter writer) throws IOException {
         writer.write("HTTP/1.1 400 Bad Request");
+    }
+
+    protected void handleNotFound(BufferedWriter writer) throws IOException {
+        writer.write("HTTP/1.1 404 Not Found");
     }
 
     protected void handleInternalServerError(BufferedWriter writer) throws IOException {
