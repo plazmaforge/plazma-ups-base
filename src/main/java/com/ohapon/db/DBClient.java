@@ -2,7 +2,11 @@ package com.ohapon.db;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Properties;
+import java.util.Scanner;
 
 public class DBClient {
 
@@ -11,6 +15,32 @@ public class DBClient {
         Settings settings = client.loadSettings();
 
         System.out.println(settings);
+
+        client.start(settings);
+    }
+
+    protected void start(Settings settings) {
+        try (Scanner in = new Scanner(System.in)) {
+            Connection connection = getConnection(settings);
+            QueryExecutor executor = new QueryExecutor();
+            while (true) {
+                if (in.hasNextLine()) {
+                    String query = in.nextLine();
+                    if (query == null || query.isEmpty()) {
+                        return;
+                    }
+                    executor.executeQuery(query);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected Connection getConnection(Settings settings) throws SQLException {
+        // TODO
+        //return DriverManager.getConnection(settings.getUrl(), settings.getUser(), settings.getPassword());
+        return null;
     }
 
     protected Settings loadSettings() {
@@ -45,4 +75,5 @@ public class DBClient {
         }
         return properties;
     }
+
 }
