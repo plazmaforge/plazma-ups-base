@@ -17,12 +17,20 @@ public class DBClient {
         Properties properties = loadProperties();
 
         Settings settings = new Settings();
-        settings.setUrl(System.getenv(Settings.PROPERTY_URL) == null ? properties.getProperty(Settings.PROPERTY_URL) : System.getenv(Settings.PROPERTY_URL));
-        settings.setUser(System.getenv(Settings.PROPERTY_USER) == null ? properties.getProperty(Settings.PROPERTY_USER) : System.getenv(Settings.PROPERTY_USER));
-        settings.setPassword(System.getenv(Settings.PROPERTY_PASSWORD)  == null ? properties.getProperty(Settings.PROPERTY_PASSWORD) : System.getenv(Settings.PROPERTY_PASSWORD));
-        settings.setReportsPath(System.getenv(Settings.PROPERTY_REPORTS_PATH)  == null ? properties.getProperty(Settings.PROPERTY_REPORTS_PATH) : System.getenv(Settings.PROPERTY_REPORTS_PATH));
+        settings.setUrl(getProperty(properties, Settings.PROPERTY_URL));
+        settings.setUser(getProperty(properties, Settings.PROPERTY_USER));
+        settings.setPassword(getProperty(properties, Settings.PROPERTY_PASSWORD));
+        settings.setReportsPath(getProperty(properties, Settings.PROPERTY_REPORTS_PATH));
 
         return settings;
+    }
+
+    protected String getProperty(Properties properties, String name) {
+        String value = System.getenv(name);
+        if (value != null) {
+            return value;
+        }
+        return properties.getProperty(name);
     }
 
     protected Properties loadProperties() {
